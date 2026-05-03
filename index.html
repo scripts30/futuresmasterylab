@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Futures Mastery Lab — Mentoría de Trading de Futuros 1 a 1</title>
+<meta name="description" content="Mentoría personalizada 1 a 1 en trading de futuros. Especializado en YM, NQ, ES, CL y GC.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --gold:#C9A84C;
+  --gold-light:#E8C97A;
+  --gold-pale:#F5E9C8;
+  --gold-dim:#8A6A28;
+  --gold-faint:rgba(201,168,76,0.08);
+  --black:#060606;
+  --black2:#0D0D0D;
+  --black3:#141414;
+  --black4:#1C1C1C;
+  --surface:#222222;
+  --border:rgba(201,168,76,0.15);
+  --border-mid:rgba(201,168,76,0.3);
+  --border-bright:rgba(201,168,76,0.5);
+  --text:#F2EEE6;
+  --text-muted:#8A8478;
+  --text-dim:#5A5650;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'Barlow',sans-serif;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.87,0,0.13,1);
+}
+
+html{scroll-behavior:smooth}
+
+/* CUSTOM CURSOR */
+body{
+  background:var(--black);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-weight:300;
+  line-height:1.7;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+#cursor{
+  position:fixed;
+  width:8px;height:8px;
+  background:var(--gold);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform 0.1s ease,width 0.3s var(--ease-out),height 0.3s var(--ease-out),background 0.3s;
+  mix-blend-mode:screen;
+}
+
+#cursor-ring{
+  position:fixed;
+  width:36px;height:36px;
+  border:0.5px solid rgba(201,168,76,0.6);
+  border-radius:50%;
+  pointer-events:none;
+  z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform 0.08s ease,width 0.4s var(--ease-out),height 0.4s var(--ease-out),opacity 0.3s,border-color 0.3s;
+}
+
+body:hover #cursor{opacity:1}
+a:hover~#cursor,button:hover~#cursor{width:4px;height:4px}
+
+/* NAV */
+nav{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:100;
+  background:rgba(6,6,6,0.85);
+  backdrop-filter:blur(20px);
+  border-bottom:0.5px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 4rem;
+  height:68px;
+}
+
+.nav-logo{
+  font-family:var(--font-display);
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:0.1em;
+  color:var(--gold);
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
+}
+
+.nav-logo span{color:var(--text);font-weight:300}
+
+.nav-links{
+  display:flex;
+  gap:2.5rem;
+  list-style:none;
+}
+
+.nav-links a{
+  font-size:11px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  text-decoration:none;
+  position:relative;
+  padding-bottom:2px;
+  transition:color 0.3s;
+}
+
+.nav-links a::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;
+  width:0;height:0.5px;
+  background:var(--gold);
+  transition:width 0.4s var(--ease-out);
+}
+
+.nav-links a:hover{color:var(--gold)}
+.nav-links a:hover::after{width:100%}
+
+.nav-cta{
+  font-size:11px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  padding:10px 24px;
+  border:0.5px solid var(--border-bright);
+  color:var(--gold);
+  text-decoration:none;
+  transition:background 0.3s,color 0.3s;
+}
+
+.nav-cta:hover{background:var(--gold);color:var(--black)}
+
+/* ========== HERO ========== */
+.hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:8rem 4rem 4rem;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Animated chart background */
+.hero-chart-bg{
+  position:absolute;
+  inset:0;
+  opacity:0.12;
+  pointer-events:none;
+}
+
+.hero-grid{
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+}
+
+.hero-vignette{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at 70% 50%, rgba(201,168,76,0.05) 0%, transparent 60%),
+             radial-gradient(ellipse at 20% 80%, rgba(201,168,76,0.03) 0%, transparent 50%);
+  pointer-events:none;
+}
+
+.hero-line-bottom{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
+}
+
+.hero-content{position:relative;z-index:2;max-width:900px}
+
+.hero-eyebrow{
+  font-size:11px;
+  letter-spacing:0.35em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:2rem;
+  display:flex;
+  align-items:center;
+  gap:1.2rem;
+  opacity:0;
+  animation:fadeUp 0.8s 0.1s var(--ease-out) forwards;
+}
+
+.hero-eyebrow-line{
+  width:48px;height:0.5px;
+  background:linear-gradient(90deg,var(--gold),transparent);
+}
+
+.hero-title{
+  font-family:var(--font-display);
+  font-size:clamp(56px,8vw,108px);
+  font-weight:300;
+  line-height:1.0;
+  letter-spacing:-0.02em;
+  margin-bottom:0.5rem;
+  opacity:0;
+  animation:fadeUp 0.9s 0.2s var(--ease-out) forwards;
+}
+
+.hero-title em{font-style:italic;color:var(--gold)}
+.hero-title strong{font-weight:600;display:block}
+
+.hero-subtitle{
+  font-family:var(--font-display);
+  font-size:clamp(17px,2.2vw,24px);
+  font-weight:300;
+  color:var(--text-muted);
+  font-style:italic;
+  margin:2rem 0 3rem;
+  max-width:560px;
+  line-height:1.5;
+  opacity:0;
+  animation:fadeUp 0.9s 0.35s var(--ease-out) forwards;
+}
+
+.hero-markets{
+  display:flex;
+  gap:0.5rem;
+  margin-bottom:3.5rem;
+  flex-wrap:wrap;
+  opacity:0;
+  animation:fadeUp 0.9s 0.45s var(--ease-out) forwards;
+}
+
+.market-tag{
+  font-size:11px;
+  letter-spacing:0.2em;
+  padding:7px 16px;
+  border:0.5px solid var(--border-mid);
+  color:var(--gold-light);
+  background:rgba(201,168,76,0.06);
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.3s,background 0.3s,transform 0.3s;
+  cursor:default;
+}
+
+.market-tag::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(201,168,76,0.15),transparent);
+  transform:translateX(-100%);
+  transition:transform 0.6s var(--ease-out);
+}
+
+.market-tag:hover::before{transform:translateX(100%)}
+.market-tag:hover{border-color:var(--border-bright);transform:translateY(-2px)}
+
+.hero-cta{
+  display:flex;
+  gap:1rem;
+  align-items:center;
+  flex-wrap:wrap;
+  opacity:0;
+  animation:fadeUp 0.9s 0.55s var(--ease-out) forwards;
+}
+
+/* LIVE CHART CANVAS */
+.hero-chart-container{
+  position:absolute;
+  right:0;top:0;bottom:0;
+  width:52%;
+  opacity:0;
+  animation:fadeIn 1.5s 0.8s ease forwards;
+}
+
+.hero-chart-container canvas{
+  width:100%!important;
+  height:100%!important;
+}
+
+/* BUTTONS */
+.btn-primary{
+  font-family:var(--font-body);
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  font-weight:500;
+  padding:18px 44px;
+  background:var(--gold);
+  color:var(--black);
+  border:none;
+  cursor:none;
+  text-decoration:none;
+  display:inline-block;
+  position:relative;
+  overflow:hidden;
+  transition:transform 0.3s var(--ease-out);
+}
+
+.btn-primary::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  opacity:0;
+  transition:opacity 0.3s;
+}
+
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-primary:hover::before{opacity:1}
+.btn-primary span{position:relative;z-index:1}
+
+.btn-outline{
+  font-family:var(--font-body);
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  font-weight:300;
+  padding:18px 44px;
+  background:transparent;
+  color:var(--text-muted);
+  border:0.5px solid rgba(255,255,255,0.12);
+  cursor:none;
+  text-decoration:none;
+  display:inline-block;
+  transition:color 0.3s,border-color 0.3s,transform 0.3s;
+}
+
+.btn-outline:hover{
+  color:var(--text);
+  border-color:rgba(255,255,255,0.35);
+  transform:translateY(-2px);
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:2rem;
+  transform:translateX(-50%) translateY(12px);
+  padding:1rem 1.25rem;
+  border-radius:999px;
+  background:rgba(12,12,12,0.94);
+  color:#fff;
+  font-size:0.95rem;
+  letter-spacing:0.01em;
+  box-shadow:0 18px 40px rgba(0,0,0,0.35);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 0.24s ease,transform 0.24s ease;
+  z-index:9999;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* STATS */
+.stats-bar{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  border-top:0.5px solid var(--border);
+  border-bottom:0.5px solid var(--border);
+  background:var(--black2);
+}
+
+.stat-item{
+  padding:2.5rem 4rem;
+  border-right:0.5px solid var(--border);
+  position:relative;
+  overflow:hidden;
+  transition:background 0.4s;
+}
+
+.stat-item::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:0;
+  background:linear-gradient(to top,rgba(201,168,76,0.06),transparent);
+  transition:height 0.4s var(--ease-out);
+}
+
+.stat-item:hover{background:var(--black3)}
+.stat-item:hover::after{height:100%}
+.stat-item:last-child{border-right:none}
+
+.stat-number{
+  font-family:var(--font-display);
+  font-size:56px;
+  font-weight:300;
+  color:var(--gold);
+  line-height:1;
+  margin-bottom:0.4rem;
+}
+
+.stat-label{
+  font-size:10px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+/* REVEAL ANIMATION */
+.reveal{
+  opacity:0;
+  transform:translateY(32px);
+  transition:opacity 0.8s var(--ease-out),transform 0.8s var(--ease-out);
+}
+
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:0.1s}
+.reveal-delay-2{transition-delay:0.2s}
+.reveal-delay-3{transition-delay:0.3s}
+.reveal-delay-4{transition-delay:0.4s}
+
+/* SECTIONS */
+section{padding:7rem 4rem}
+
+.section-label{
+  font-size:10px;
+  letter-spacing:0.38em;
+  text-transform:uppercase;
+  color:var(--gold-dim);
+  margin-bottom:1rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.section-label::after{
+  content:'';
+  flex:1;
+  height:0.5px;
+  background:linear-gradient(90deg,var(--border-mid),transparent);
+  max-width:80px;
+}
+
+.section-title{
+  font-family:var(--font-display);
+  font-size:clamp(38px,5vw,68px);
+  font-weight:300;
+  line-height:1.05;
+  margin-bottom:1.5rem;
+}
+
+.section-title em{color:var(--gold);font-style:italic}
+
+/* ========== ABOUT ========== */
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6rem;
+  align-items:center;
+  margin-top:4rem;
+}
+
+.about-text p{
+  font-size:15px;
+  color:var(--text-muted);
+  margin-bottom:1.4rem;
+  line-height:1.9;
+}
+
+.about-text p strong{color:var(--text);font-weight:500}
+
+.about-visual{display:flex;flex-direction:column;gap:2px}
+
+.trait-row{
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  padding:1.3rem 1.6rem;
+  border:0.5px solid var(--border);
+  background:var(--black2);
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.4s,background 0.4s,transform 0.3s;
+  cursor:default;
+}
+
+.trait-row::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:2px;
+  background:var(--gold);
+  transform:scaleY(0);
+  transition:transform 0.4s var(--ease-out);
+  transform-origin:bottom;
+}
+
+.trait-row:hover{
+  border-color:var(--border-mid);
+  background:var(--black3);
+  transform:translateX(4px);
+}
+
+.trait-row:hover::before{transform:scaleY(1)}
+
+.trait-icon{
+  width:34px;height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:0.5px solid var(--border-mid);
+  color:var(--gold);
+  font-size:13px;
+  flex-shrink:0;
+  transition:border-color 0.3s,background 0.3s;
+}
+
+.trait-row:hover .trait-icon{
+  border-color:var(--border-bright);
+  background:rgba(201,168,76,0.08);
+}
+
+.trait-text{font-size:13px;color:var(--text);letter-spacing:0.02em}
+
+/* ========== PAIN SECTION ========== */
+#dolor{
+  background:var(--black2);
+  position:relative;
+  overflow:hidden;
+}
+
+#dolor::before{
+  content:'';
+  position:absolute;
+  top:-200px;left:-200px;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(180,50,50,0.04) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.pain-intro{
+  max-width:640px;
+  font-size:15px;
+  color:var(--text-muted);
+  line-height:1.9;
+  margin-top:1.5rem;
+  margin-bottom:4rem;
+}
+
+.pain-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  background:var(--border);
+  margin-bottom:5rem;
+}
+
+.pain-card{
+  background:var(--black2);
+  padding:2.8rem 2.2rem;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.4s;
+  cursor:default;
+}
+
+.pain-card::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(180,50,50,0.5),transparent);
+  transform:scaleX(0);
+  transition:transform 0.5s var(--ease-out);
+}
+
+.pain-card:hover{background:var(--black3)}
+.pain-card:hover::after{transform:scaleX(1)}
+
+.pain-number{
+  font-family:var(--font-display);
+  font-size:72px;
+  font-weight:300;
+  color:rgba(180,50,50,0.12);
+  line-height:1;
+  margin-bottom:1.2rem;
+  user-select:none;
+}
+
+.pain-icon{
+  font-size:20px;
+  margin-bottom:1rem;
+  display:block;
+}
+
+.pain-title{
+  font-family:var(--font-display);
+  font-size:20px;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:0.8rem;
+  line-height:1.3;
+}
+
+.pain-desc{
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.8;
+}
+
+/* TRANSFORMATION STRIP */
+.transform-strip{
+  background:linear-gradient(135deg,rgba(201,168,76,0.08),rgba(201,168,76,0.03));
+  border:0.5px solid var(--border-mid);
+  padding:3rem 3.5rem;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:3rem;
+}
+
+.transform-before,.transform-after{
+  display:flex;
+  flex-direction:column;
+  gap:0.8rem;
+}
+
+.transform-label{
+  font-size:10px;
+  letter-spacing:0.3em;
+  text-transform:uppercase;
+}
+
+.transform-before .transform-label{color:rgba(180,50,50,0.7)}
+.transform-after .transform-label{color:var(--gold-dim)}
+
+.transform-item{
+  font-size:13px;
+  line-height:1.6;
+  display:flex;
+  align-items:flex-start;
+  gap:0.8rem;
+}
+
+.transform-before .transform-item{color:var(--text-muted)}
+.transform-after .transform-item{color:var(--text)}
+
+.transform-before .transform-dot{
+  color:rgba(180,50,50,0.6);
+  margin-top:3px;
+  flex-shrink:0;
+}
+
+.transform-after .transform-dot{
+  color:var(--gold);
+  margin-top:3px;
+  flex-shrink:0;
+}
+
+.transform-arrow{
+  font-family:var(--font-display);
+  font-size:40px;
+  color:var(--gold);
+  opacity:0.5;
+  text-align:center;
+}
+
+/* ========== SERVICES ========== */
+#servicios{background:var(--black3)}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  margin-top:4rem;
+  background:var(--border);
+}
+
+.service-card{
+  background:var(--black3);
+  padding:3.2rem 2.6rem;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.4s;
+  cursor:default;
+}
+
+.service-card::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transform:scaleX(0);
+  transition:transform 0.6s var(--ease-out);
+}
+
+.service-card:hover{background:var(--black4)}
+.service-card:hover::before{transform:scaleX(1)}
+
+.service-number{
+  font-family:var(--font-display);
+  font-size:80px;
+  font-weight:300;
+  color:rgba(201,168,76,0.07);
+  line-height:1;
+  margin-bottom:1.5rem;
+  user-select:none;
+  transition:color 0.4s;
+}
+
+.service-card:hover .service-number{color:rgba(201,168,76,0.12)}
+
+.service-icon{
+  width:44px;height:44px;
+  border:0.5px solid var(--border-mid);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:1.5rem;
+  color:var(--gold);
+  font-size:18px;
+  transition:border-color 0.3s,background 0.3s;
+}
+
+.service-card:hover .service-icon{
+  border-color:var(--border-bright);
+  background:rgba(201,168,76,0.06);
+}
+
+.service-title{
+  font-family:var(--font-display);
+  font-size:23px;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:1rem;
+  line-height:1.2;
+}
+
+.service-desc{
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.9;
+  margin-bottom:2rem;
+}
+
+.service-list{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.service-list li{
+  font-size:12px;
+  color:var(--text-dim);
+  letter-spacing:0.05em;
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+}
+
+.service-list li::before{
+  content:'';
+  width:4px;height:4px;
+  background:var(--gold-dim);
+  border-radius:50%;
+  flex-shrink:0;
+  transition:background 0.3s;
+}
+
+.service-card:hover .service-list li::before{background:var(--gold)}
+
+/* ========== ANIMATED CHART SECTION ========== */
+#mercados{
+  background:var(--black);
+  position:relative;
+  overflow:hidden;
+}
+
+.markets-header{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:end;
+  margin-bottom:4rem;
+}
+
+.markets-chart-area{
+  background:var(--black2);
+  border:0.5px solid var(--border);
+  padding:2rem;
+  position:relative;
+  height:280px;
+  margin-bottom:2px;
+}
+
+.markets-chart-label{
+  position:absolute;
+  top:1.2rem;left:1.5rem;
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+.markets-chart-ticker{
+  position:absolute;
+  top:1rem;right:1.5rem;
+  font-family:var(--font-display);
+  font-size:28px;
+  color:var(--gold);
+  font-weight:300;
+}
+
+.markets-chart-change{
+  position:absolute;
+  top:2.8rem;right:1.5rem;
+  font-size:11px;
+  letter-spacing:0.1em;
+  color:#4ade80;
+}
+
+.chart-canvas-wrap{
+  position:absolute;
+  bottom:1.5rem;left:1rem;right:1rem;
+  height:180px;
+}
+
+.markets-list{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:2px;
+  background:var(--border);
+}
+
+.market-item{
+  background:var(--black);
+  padding:2rem 1.5rem;
+  text-align:center;
+  transition:background 0.3s,transform 0.3s;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+
+.market-item::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:var(--gold);
+  transform:scaleX(0);
+  transition:transform 0.3s var(--ease-out);
+}
+
+.market-item:hover{background:var(--black3)}
+.market-item:hover::after{transform:scaleX(1)}
+
+.market-ticker{
+  font-family:var(--font-display);
+  font-size:32px;
+  font-weight:300;
+  color:var(--gold);
+  display:block;
+  margin-bottom:0.4rem;
+  transition:font-size 0.3s;
+}
+
+.market-item:hover .market-ticker{font-size:36px}
+
+.market-name{
+  font-size:10px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  display:block;
+  margin-bottom:0.3rem;
+}
+
+.market-type{
+  font-size:9px;
+  color:var(--text-dim);
+  letter-spacing:0.1em;
+}
+
+/* ========== TESTIMONIALS ========== */
+#resultados{
+  background:var(--black2);
+  position:relative;
+}
+
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  background:var(--border);
+  margin-top:4rem;
+}
+
+.testimonial-card{
+  background:var(--black2);
+  padding:2.8rem 2.4rem;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.4s;
+}
+
+.testimonial-card::before{
+  content:'"';
+  position:absolute;
+  top:-0.5rem;left:1.8rem;
+  font-family:var(--font-display);
+  font-size:120px;
+  color:rgba(201,168,76,0.06);
+  line-height:1;
+  pointer-events:none;
+}
+
+.testimonial-card:hover{background:var(--black3)}
+
+.testimonial-text{
+  font-family:var(--font-display);
+  font-size:16px;
+  font-style:italic;
+  color:var(--text-muted);
+  line-height:1.7;
+  margin-bottom:2rem;
+  position:relative;
+  z-index:1;
+}
+
+.testimonial-author{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+}
+
+.author-avatar{
+  width:40px;height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-dim),rgba(201,168,76,0.3));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-display);
+  font-size:15px;
+  color:var(--black);
+  font-weight:600;
+  flex-shrink:0;
+}
+
+.author-name{
+  font-size:13px;
+  font-weight:500;
+  color:var(--text);
+  display:block;
+}
+
+.author-role{
+  font-size:11px;
+  color:var(--text-dim);
+  letter-spacing:0.05em;
+}
+
+.author-stars{
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:2px;
+  margin-top:2px;
+}
+
+/* ========== PROCESS ========== */
+#proceso{background:var(--black)}
+
+.process-steps{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+  background:var(--border);
+  margin-top:4rem;
+}
+
+.process-step{
+  background:var(--black);
+  padding:2.8rem 2rem;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.4s;
+  cursor:default;
+}
+
+.process-step:hover{background:var(--black2)}
+
+.step-connector{
+  position:absolute;
+  right:-1px;top:50%;
+  transform:translateY(-50%);
+  width:18px;height:18px;
+  background:var(--black);
+  border:0.5px solid var(--border-mid);
+  border-radius:50%;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:8px;
+  color:var(--gold);
+}
+
+.process-step:last-child .step-connector{display:none}
+
+.step-num{
+  font-family:var(--font-display);
+  font-size:11px;
+  letter-spacing:0.25em;
+  color:var(--gold-dim);
+  margin-bottom:1.5rem;
+  text-transform:uppercase;
+}
+
+.step-title{
+  font-family:var(--font-display);
+  font-size:22px;
+  font-weight:600;
+  color:var(--text);
+  margin-bottom:1rem;
+  line-height:1.2;
+}
+
+.step-desc{
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.8;
+}
+
+/* ========== CONTACT ========== */
+#contacto{
+  background:var(--black2);
+  position:relative;
+  overflow:hidden;
+}
+
+#contacto::after{
+  content:'';
+  position:absolute;
+  bottom:-300px;right:-300px;
+  width:600px;height:600px;
+  background:radial-gradient(circle,rgba(201,168,76,0.05) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.contact-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6rem;
+  margin-top:4rem;
+  align-items:start;
+}
+
+.contact-intro p{
+  font-size:15px;
+  color:var(--text-muted);
+  line-height:1.9;
+  margin-bottom:1.5rem;
+}
+
+.contact-highlight{
+  background:rgba(201,168,76,0.05);
+  border:0.5px solid var(--border-mid);
+  border-left:2px solid var(--gold);
+  padding:1.5rem 2rem;
+  margin:2.5rem 0;
+}
+
+.contact-highlight p{
+  font-family:var(--font-display);
+  font-size:18px;
+  font-style:italic;
+  color:var(--text);
+  margin:0!important;
+  line-height:1.5;
+}
+
+.contact-channels{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.channel-item{
+  display:flex;
+  align-items:center;
+  gap:1.5rem;
+  padding:1.6rem 2rem;
+  border:0.5px solid var(--border);
+  background:var(--black);
+  text-decoration:none;
+  color:inherit;
+  position:relative;
+  overflow:hidden;
+  transition:border-color 0.4s,background 0.4s,transform 0.3s;
+}
+
+.channel-item::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:0;
+  background:rgba(201,168,76,0.05);
+  transition:width 0.4s var(--ease-out);
+}
+
+.channel-item:hover{
+  border-color:var(--border-bright);
+  transform:translateX(4px);
+}
+
+.channel-item:hover::before{width:100%}
+
+.channel-icon{
+  width:44px;height:44px;
+  border:0.5px solid var(--border-mid);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  position:relative;
+  z-index:1;
+  transition:border-color 0.3s,background 0.3s;
+}
+
+.channel-item:hover .channel-icon{
+  border-color:var(--border-bright);
+  background:rgba(201,168,76,0.08);
+}
+
+.channel-icon svg{width:20px;height:20px;fill:var(--gold)}
+
+.channel-info{flex:1;position:relative;z-index:1}
+
+.channel-name{
+  font-size:13px;
+  font-weight:500;
+  color:var(--text);
+  letter-spacing:0.05em;
+  display:block;
+}
+
+.channel-handle{
+  font-size:12px;
+  color:var(--text-muted);
+  display:block;
+  margin-top:2px;
+}
+
+.channel-arrow{
+  color:var(--gold-dim);
+  font-size:16px;
+  position:relative;
+  z-index:1;
+  transition:color 0.3s,transform 0.3s;
+}
+
+.channel-item:hover .channel-arrow{
+  color:var(--gold);
+  transform:translateX(4px);
+}
+
+/* FAQ */
+.faq-list{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-top:4rem;
+}
+
+.faq-item{
+  border:0.5px solid var(--border);
+  background:var(--black);
+  overflow:hidden;
+}
+
+.faq-question{
+  padding:1.5rem 2rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  cursor:pointer;
+  transition:background 0.3s;
+  font-size:14px;
+  color:var(--text);
+  letter-spacing:0.02em;
+  user-select:none;
+}
+
+.faq-question:hover{background:var(--black2)}
+
+.faq-toggle{
+  width:24px;height:24px;
+  border:0.5px solid var(--border-mid);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--gold);
+  font-size:16px;
+  flex-shrink:0;
+  transition:transform 0.4s var(--ease-out),background 0.3s;
+}
+
+.faq-item.open .faq-toggle{transform:rotate(45deg);background:rgba(201,168,76,0.1)}
+
+.faq-answer{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.5s var(--ease-in-out);
+}
+
+.faq-answer-inner{
+  padding:0 2rem 1.8rem;
+  font-size:13px;
+  color:var(--text-muted);
+  line-height:1.9;
+}
+
+.faq-item.open .faq-answer{max-height:300px}
+
+/* FOOTER */
+footer{
+  border-top:0.5px solid var(--border);
+  padding:3rem 4rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:1rem;
+  background:var(--black);
+}
+
+.footer-logo{
+  font-family:var(--font-display);
+  font-size:16px;
+  color:var(--gold);
+  letter-spacing:0.1em;
+}
+
+.footer-tagline{
+  font-family:var(--font-display);
+  font-size:12px;
+  font-style:italic;
+  color:var(--text-dim);
+}
+
+.footer-copy{
+  font-size:11px;
+  color:var(--text-dim);
+  letter-spacing:0.05em;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(28px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@keyframes pulse{
+  0%,100%{opacity:0.4}
+  50%{opacity:0.8}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--black)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 1.5rem}
+  .nav-links,.nav-cta{display:none}
+  .hero,.section{padding-left:1.5rem;padding-right:1.5rem}
+  section{padding:4rem 1.5rem}
+  .hero-chart-container{display:none}
+  .about-grid,.contact-grid,.markets-header{grid-template-columns:1fr}
+  .services-grid,.pain-grid,.testimonials-grid,.process-steps{grid-template-columns:1fr}
+  .markets-list{grid-template-columns:repeat(3,1fr)}
+  .stats-bar{grid-template-columns:1fr}
+  .stat-item{border-right:none;border-bottom:0.5px solid var(--border)}
+  .transform-strip{grid-template-columns:1fr;text-align:center}
+  .transform-arrow{transform:rotate(90deg)}
+  footer{padding:2rem 1.5rem;flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#inicio" class="nav-logo">Futures <span>Mastery Lab</span></a>
+  <ul class="nav-links">
+    <li><a href="#sobre-mi">Perfil</a></li>
+    <li><a href="#dolor">¿Eres tú?</a></li>
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#contacto">Contacto</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Aplicar</a>
+</nav>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="inicio">
+  <div class="hero-grid"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-chart-container">
+    <canvas id="heroChart"></canvas>
+  </div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      Mentoría Personalizada · 1 a 1
+    </div>
+    <h1 class="hero-title">
+      <em>Domina</em> los mercados<br>
+      <strong>de Futuros.</strong>
+    </h1>
+    <p class="hero-subtitle">
+      Mentoría de élite para traders con experiencia que buscan consistencia real y operativa profesional en mercados de futuros.
+    </p>
+    <div class="hero-markets">
+      <span class="market-tag">YM</span>
+      <span class="market-tag">NQ</span>
+      <span class="market-tag">ES</span>
+      <span class="market-tag">CL</span>
+      <span class="market-tag">GC</span>
+    </div>
+    <div class="hero-cta">
+      <a href="#contacto" class="btn-primary js-auto-message" data-message="Gracias por tu interés. Te muestro el formulario de aplicación."><span>Aplicar a la Mentoría</span></a>
+      <a href="#dolor" class="btn-outline">¿Es para ti?</a>
+    </div>
+  </div>
+  <div class="hero-line-bottom"></div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item reveal">
+    <div class="stat-number">5</div>
+    <div class="stat-label">Mercados especializados</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-1">
+    <div class="stat-number">1:1</div>
+    <div class="stat-label">Mentoría exclusiva</div>
+  </div>
+  <div class="stat-item reveal reveal-delay-2">
+    <div class="stat-number">∞</div>
+    <div class="stat-label">Soporte continuo</div>
+  </div>
+</div>
+
+<!-- ========== SOBRE MÍ ========== -->
+<section id="sobre-mi">
+  <div class="reveal">
+    <div class="section-label">Quién soy</div>
+    <h2 class="section-title">Trader Cuantitativo.<br>Estratega. <em>Tu Mentor.</em></h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text reveal reveal-delay-1">
+      <p>Soy un <strong>trader cuantitativo especializado en mercados de futuros</strong>, enfocado en el diseño, validación y optimización de estrategias basadas en datos — operando los mercados más líquidos del mundo: YM, NQ, ES, CL y GC.</p>
+      <p>Desarrollo <strong>modelos sistemáticos</strong> utilizando estadística, probabilidad y programación, aplicando metodologías como backtesting robusto y análisis walk-forward para evaluar el desempeño real de cada estrategia antes de exponerla al mercado.</p>
+      <p>Integro <strong>price action con patrones históricos y lógica cuantificable</strong> para anticipar comportamientos del mercado y tomar decisiones objetivas — alineadas con la psicología del trader, completamente alejadas de la intuición o la emoción.</p>
+      <p>Si ya tienes base en trading pero no logras la <strong>consistencia que buscas</strong>, aquí es exactamente donde ese techo se rompe.</p>
+    </div>
+    <div class="about-visual reveal reveal-delay-2">
+      <div class="trait-row">
+        <div class="trait-icon">▲</div>
+        <span class="trait-text">Estrategias cuantitativas con backtesting y walk-forward</span>
+      </div>
+      <div class="trait-row">
+        <div class="trait-icon">◈</div>
+        <span class="trait-text">Modelado estadístico y probabilístico del mercado</span>
+      </div>
+      <div class="trait-row">
+        <div class="trait-icon">◉</div>
+        <span class="trait-text">Price action integrado con lógica cuantificable</span>
+      </div>
+      <div class="trait-row">
+        <div class="trait-icon">⬡</div>
+        <span class="trait-text">Gestión de riesgo, position sizing y psicología operativa</span>
+      </div>
+      <div class="trait-row">
+        <div class="trait-icon">⊕</div>
+        <span class="trait-text">Lectura de flujo de órdenes institucional</span>
+      </div>
+      <div class="trait-row">
+        <div class="trait-icon">✦</div>
+        <span class="trait-text">Auditoría de journal, métricas y estadísticas personales</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DOLOR / PAIN SECTION ========== -->
+<section id="dolor">
+  <div class="reveal">
+    <div class="section-label">El problema real</div>
+    <h2 class="section-title">¿Te suena<br><em>familiar?</em></h2>
+    <p class="pain-intro">La mayoría de traders con experiencia llegan a un punto de estancamiento — saben operar, pero no logran la consistencia. Aquí están los síntomas más comunes:</p>
+  </div>
+  <div class="pain-grid">
+    <div class="pain-card reveal">
+      <div class="pain-number">01</div>
+      <div class="pain-title">El ciclo ganar-perder infinito</div>
+      <p class="pain-desc">Tienes semanas buenas, luego lo devuelves todo. Tu equity curve parece un electrocardiograma sin dirección clara. Sientes que el mercado "te elige".</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-1">
+      <div class="pain-number">02</div>
+      <div class="pain-title">Sabes la teoría, fallas en vivo</div>
+      <p class="pain-desc">En demo o en papel, todo funciona. Con dinero real, tu sistema se desintegra. El problema no es el sistema — eres tú bajo presión.</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-2">
+      <div class="pain-number">03</div>
+      <div class="pain-title">Revenge trading y overtrading</div>
+      <p class="pain-desc">Después de una pérdida, algo en ti quiere "recuperar". Abres trades que no estaban en tu plan. Un mal día se convierte en una semana destruida.</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-3">
+      <div class="pain-number">04</div>
+      <div class="pain-title">No sabes qué te falta exactamente</div>
+      <p class="pain-desc">Has visto cientos de horas de contenido. Tienes 3 estrategias distintas. Aún así, no hay claridad de por qué no avanzas al siguiente nivel.</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-1">
+      <div class="pain-number">05</div>
+      <div class="pain-title">Sizing inadecuado para tus metas</div>
+      <p class="pain-desc">Operas demasiado pequeño por miedo, o demasiado grande por ambición. Ninguno de los dos te lleva a la cuenta que tienes en mente.</p>
+    </div>
+    <div class="pain-card reveal reveal-delay-2">
+      <div class="pain-number">06</div>
+      <div class="pain-title">Aislamiento y falta de feedback real</div>
+      <p class="pain-desc">Operas solo. No tienes a nadie que revise tus trades con ojos críticos y experimentados. El autodiagnóstico tiene puntos ciegos que no puedes ver tú mismo.</p>
+    </div>
+  </div>
+
+  <!-- TRANSFORM STRIP -->
+  <div class="transform-strip reveal">
+    <div class="transform-before">
+      <div class="transform-label">Sin mentoría</div>
+      <div class="transform-item"><span class="transform-dot">✕</span>Inconsistencia crónica</div>
+      <div class="transform-item"><span class="transform-dot">✕</span>Aprendizaje por ensayo y error costoso</div>
+      <div class="transform-item"><span class="transform-dot">✕</span>Emociones que gobiernan las decisiones</div>
+      <div class="transform-item"><span class="transform-dot">✕</span>Sin claridad sobre el próximo paso</div>
+    </div>
+    <div class="transform-arrow">→</div>
+    <div class="transform-after">
+      <div class="transform-label">Con Futures Mastery Lab</div>
+      <div class="transform-item"><span class="transform-dot">✓</span>Sistema operativo claro y consistente</div>
+      <div class="transform-item"><span class="transform-dot">✓</span>Feedback real en cada trade tuyo</div>
+      <div class="transform-item"><span class="transform-dot">✓</span>Psicología y disciplina trabajadas</div>
+      <div class="transform-item"><span class="transform-dot">✓</span>Hoja de ruta a tu próximo nivel</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SERVICIOS ========== -->
+<section id="servicios">
+  <div class="reveal">
+    <div class="section-label">Lo que ofrezco</div>
+    <h2 class="section-title">Programas de<br><em>Mentoría</em></h2>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-number">01</div>
+      <div class="service-icon">◈</div>
+      <div class="service-title">Mentoría 1 a 1 Personalizada</div>
+      <p class="service-desc">Sesiones privadas adaptadas a tu nivel, estilo y mercados. Construimos juntos tu sistema operativo desde tu realidad, no desde plantillas genéricas.</p>
+      <ul class="service-list">
+        <li>Sesiones semanales privadas</li>
+        <li>Revisión de operativa real</li>
+        <li>Plan personalizado semana a semana</li>
+        <li>Acceso directo por WhatsApp/Telegram</li>
+      </ul>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-number">02</div>
+      <div class="service-icon">▣</div>
+      <div class="service-title">Auditoría de Operativa y Journal</div>
+      <p class="service-desc">Revisión exhaustiva de tus trades históricos, estadísticas y patrones de comportamiento. La data revela lo que la intuición esconde.</p>
+      <ul class="service-list">
+        <li>Análisis de 30-90 días de operativa</li>
+        <li>Identificación de patrones negativos</li>
+        <li>Métricas de riesgo/retorno reales</li>
+        <li>Informe detallado + sesión de feedback</li>
+      </ul>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-number">03</div>
+      <div class="service-icon">◉</div>
+      <div class="service-title">Acompañamiento en Vivo</div>
+      <p class="service-desc">Sesiones en tiempo real observando el mercado juntos. Tomas decisiones, yo te doy contexto inmediato. El aprendizaje más poderoso ocurre en tiempo real.</p>
+      <ul class="service-list">
+        <li>Análisis de mercado en tiempo real</li>
+        <li>Lectura de order flow en vivo</li>
+        <li>Coaching de ejecución y timing</li>
+        <li>Debriefing post-sesión</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MERCADOS ========== -->
+<section id="mercados">
+  <div class="markets-header">
+    <div class="reveal">
+      <div class="section-label">Especialización</div>
+      <h2 class="section-title">Mercados que<br><em>dominamos</em></h2>
+    </div>
+    <div class="markets-chart-area reveal reveal-delay-1">
+      <div class="markets-chart-label">Live Simulation · NQ Futures</div>
+      <div class="markets-chart-ticker" id="chartTicker">NQ</div>
+      <div class="markets-chart-change" id="chartChange">+1.24%</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="marketChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="markets-list reveal">
+    <div class="market-item" onclick="switchChart('YM','Dow Jones Mini','#E8C97A')">
+      <span class="market-ticker">YM</span>
+      <span class="market-name">Dow Jones</span>
+      <span class="market-type">Índice · CBOT</span>
+    </div>
+    <div class="market-item" onclick="switchChart('NQ','Nasdaq 100','#C9A84C')">
+      <span class="market-ticker">NQ</span>
+      <span class="market-name">Nasdaq 100</span>
+      <span class="market-type">Índice · CME</span>
+    </div>
+    <div class="market-item" onclick="switchChart('ES','S&P 500','#8A6A28')">
+      <span class="market-ticker">ES</span>
+      <span class="market-name">S&amp;P 500</span>
+      <span class="market-type">Índice · CME</span>
+    </div>
+    <div class="market-item" onclick="switchChart('CL','Crude Oil','#C9A84C')">
+      <span class="market-ticker">CL</span>
+      <span class="market-name">Crude Oil</span>
+      <span class="market-type">Commodity · NYMEX</span>
+    </div>
+    <div class="market-item" onclick="switchChart('GC','Gold','#E8C97A')">
+      <span class="market-ticker">GC</span>
+      <span class="market-name">Gold</span>
+      <span class="market-type">Commodity · COMEX</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== RESULTADOS / TESTIMONIALS ========== -->
+<section id="resultados">
+  <div class="reveal">
+    <div class="section-label">Resultados</div>
+    <h2 class="section-title">Lo que dicen<br><em>quienes lo vivieron</em></h2>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal">
+      <p class="testimonial-text">"Llevaba 2 años operando sin consistencia. En 6 semanas de mentoría encontré exactamente dónde fallaba mi gestión de riesgo. Transformó mi forma de ver el mercado."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">MR</div>
+        <div>
+          <span class="author-name">M. Rodríguez</span>
+          <span class="author-role">Trader de NQ y ES · Colombia</span>
+          <span class="author-stars">★★★★★</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-1">
+      <p class="testimonial-text">"El acompañamiento en vivo fue la diferencia. No es teoría — es estar ahí en el momento en que el mercado se mueve. Eso no lo consigues en ningún curso."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">JL</div>
+        <div>
+          <span class="author-name">J. López</span>
+          <span class="author-role">Trader de CL y GC · México</span>
+          <span class="author-stars">★★★★★</span>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <p class="testimonial-text">"La auditoría de mi journal fue brutal pero necesaria. Ver mis propios patrones negativos con datos duros es lo que me hizo cambiar de mentalidad definitivamente."</p>
+      <div class="testimonial-author">
+        <div class="author-avatar">AC</div>
+        <div>
+          <span class="author-name">A. Castillo</span>
+          <span class="author-role">Trader de YM · Ecuador</span>
+          <span class="author-stars">★★★★★</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROCESO ========== -->
+<section id="proceso">
+  <div class="reveal">
+    <div class="section-label">Cómo funciona</div>
+    <h2 class="section-title">El proceso de<br><em>transformación</em></h2>
+  </div>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <div class="step-connector">→</div>
+      <div class="step-num">Paso 01</div>
+      <div class="step-title">Aplicación y diagnóstico</div>
+      <p class="step-desc">Me escribes, conversamos sobre tu experiencia, mercados y objetivos. Evaluamos si hay fit real entre tu momento y lo que ofrezco.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <div class="step-connector">→</div>
+      <div class="step-num">Paso 02</div>
+      <div class="step-title">Auditoría inicial</div>
+      <p class="step-desc">Revisamos tu operativa reciente, journal y estadísticas. Identificamos los 3 puntos críticos que más impactan en tu consistencia.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <div class="step-connector">→</div>
+      <div class="step-num">Paso 03</div>
+      <div class="step-title">Plan personalizado</div>
+      <p class="step-desc">Diseñamos tu hoja de ruta: sesiones semanales, métricas clave, ejercicios específicos y checkpoints de progreso medibles.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <div class="step-num">Paso 04</div>
+      <div class="step-title">Evolución continua</div>
+      <p class="step-desc">Iteramos semana a semana. El plan se ajusta en función de tus resultados reales, no de un currículo fijo. Esto es mentoría viva.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CONTACTO ========== -->
+<section id="contacto">
+  <div class="reveal">
+    <div class="section-label">Hablemos</div>
+    <h2 class="section-title">Aplicar a la<br><em>Mentoría</em></h2>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-intro reveal">
+      <p>Las plazas son <strong style="color:var(--text)">limitadas y seleccionadas</strong>. Trabajo únicamente con traders que tienen experiencia previa y están genuinamente comprometidos con su evolución profesional.</p>
+      <p>No acepto a todo el mundo. Si pasas el proceso de aplicación, sé que podemos lograr resultados reales juntos.</p>
+      <div class="contact-highlight">
+        <p>"Si ya sabes operar pero no logras consistencia — eso tiene solución: desarrollar un edge basado en datos y no en emociones."</p>
+      </div>
+      <a href="https://wa.link/4rzf6b" class="btn-primary js-auto-message" target="_blank" data-message="Redirigiéndote a WhatsApp para continuar el contacto."><span>Aplicar por WhatsApp →</span></a>
+
+      <!-- FAQ -->
+      <div class="faq-list" style="margin-top:3rem">
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            ¿Para quién es esta mentoría?
+            <div class="faq-toggle">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Para traders que ya operan — con cuentas reales o fondeo — pero que no logran consistencia. Si eres completamente nuevo en trading, primero necesitas bases sólidas antes de la mentoría avanzada.</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            ¿Qué plataformas necesito?
+            <div class="faq-toggle">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Trabajo especialmente con Tradingview, Tradovate, NinjaTrader y plataformas de fondeo principales (Take Profit Trader, TopStep, Apex, FundedNext, Purdia). Nos adaptamos a lo que ya usas.</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            ¿Cuánto tiempo dura la mentoría?
+            <div class="faq-toggle">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">Mínimo 4 semanas, ideal 8-12 semanas para transformación real. La duración depende de tu punto de partida y objetivos. Lo definimos en la sesión de diagnóstico inicial.</div>
+          </div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-question" onclick="toggleFaq(this)">
+            ¿Hay garantía de resultados?
+            <div class="faq-toggle">+</div>
+          </div>
+          <div class="faq-answer">
+            <div class="faq-answer-inner">El trading no tiene garantías — y cualquiera que las ofrezca miente. Lo que sí garantizo es mi compromiso total, feedback honesto y las herramientas correctas. Cuando aplicas un enfoque basado en datos y probabilidad, la mejora es objetiva, pero los resultados dependen de tu disciplina y consistencia al ejecutarlo.”.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-channels reveal reveal-delay-1">
+      <!-- ⚠️ Reemplaza 593XXXXXXXXX con tu número -->
+      <a class="channel-item js-auto-message" href="https:wa.link/4rzf6b" target="_blank" data-message="Redirigiéndote a WhatsApp para continuar el contacto.">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div class="channel-info">
+          <span class="channel-name">WhatsApp</span>
+          <span class="channel-handle">Contacto directo — Respuesta inmediata</span>
+        </div>
+        <span class="channel-arrow">→</span>
+      </a>
+      <!-- ⚠️ Reemplaza con tu usuario de Instagram --
+      <a class="channel-item" href="https://instagram.com/futuresmasterylab" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        </div>
+        <div class="channel-info">
+          <span class="channel-name">Instagram</span>
+          <span class="channel-handle">@futuresmasterylab · contenido diario</span>
+        </div>
+        <span class="channel-arrow">→</span>
+      </a>
+      !-- ⚠️ Reemplaza con tu usuario de Telegram --
+      <a class="channel-item" href="https://t.me/futuresmasterylab" target="_blank">
+        <div class="channel-icon">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        </div>
+        <div class="channel-info">
+          <span class="channel-name">Telegram</span>
+          <span class="channel-handle">@futuresmasterylab · comunidad</span>
+        </div>
+        <span class="channel-arrow">→</span>
+      </a> -->
+
+      <!-- URGENCY BOX -->
+      <div style="border:0.5px solid var(--border-mid);background:rgba(201,168,76,0.04);padding:2rem;margin-top:2px">
+        <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold-dim);margin-bottom:0.8rem">Disponibilidad actual</div>
+        <div style="font-family:var(--font-display);font-size:22px;color:var(--text);margin-bottom:0.5rem">Plazas limitadas</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.7">Solo se acepta <strong style="color:var(--text)">5 mentoreados simultáneamente</strong> para garantizar calidad total. Si hay lista de espera, te aviso en cuanto se abra un espacio.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="autoMessageToast" class="toast" aria-live="polite"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Futures Mastery Lab</div>
+  <div class="footer-tagline">Precisión. Consistencia. Dominio.</div>
+  <div class="footer-copy">© 2026 · Todos los derechos reservados</div>
+</footer>
+
+<script>
+/* ========== CURSOR ========== */
+const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+});
+function animRing(){
+  rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('a,button,.market-item,.trait-row,.service-card,.pain-card,.faq-question').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    cur.style.width='16px';cur.style.height='16px';
+    ring.style.width='56px';ring.style.height='56px';
+    ring.style.borderColor='rgba(201,168,76,0.9)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    cur.style.width='8px';cur.style.height='8px';
+    ring.style.width='36px';ring.style.height='36px';
+    ring.style.borderColor='rgba(201,168,76,0.6)';
+  });
+});
+
+/* ========== SCROLL REVEAL ========== */
+const reveals=document.querySelectorAll('.reveal');
+const revealObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible')}});
+},{threshold:0.12});
+reveals.forEach(r=>revealObs.observe(r));
+
+const toast=document.getElementById('autoMessageToast');
+let toastTimer=null;
+function showAutoMessage(text){
+  if(!toast)return;
+  toast.textContent=text;
+  toast.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),3200);
+}
+
+document.querySelectorAll('.js-auto-message').forEach(el=>{
+  el.addEventListener('click',()=>{
+    const message=el.dataset.message?.trim()||'Procesando tu solicitud...';
+    showAutoMessage(message);
+  });
+});
+
+/* ========== HERO CHART ========== */
+function generateCandleData(n,base,vol,trend){
+  const data=[];let price=base;
+  for(let i=0;i<n;i++){
+    const change=(Math.random()-0.48)*vol+(trend||0);
+    const open=price;
+    const close=price+change;
+    const high=Math.max(open,close)+Math.random()*vol*0.3;
+    const low=Math.min(open,close)-Math.random()*vol*0.3;
+    data.push({o:open,c:close,h:high,l:low});
+    price=close;
+  }
+  return data;
+}
+
+function drawCandleChart(canvasId,data,color){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width=canvas.offsetWidth*window.devicePixelRatio||canvas.parentElement.clientWidth*window.devicePixelRatio||600;
+  const H=canvas.height=canvas.offsetHeight*window.devicePixelRatio||300;
+  ctx.scale(1,1);
+  ctx.clearRect(0,0,W,H);
+
+  const prices=data.flatMap(d=>[d.h,d.l]);
+  const minP=Math.min(...prices),maxP=Math.max(...prices);
+  const range=maxP-minP||1;
+  const padL=20,padR=10,padT=20,padB=20;
+  const chartW=W-padL-padR,chartH=H-padT-padB;
+  const toY=p=>padT+chartH*(1-(p-minP)/range);
+
+  /* subtle grid */
+  ctx.strokeStyle='rgba(201,168,76,0.06)';
+  ctx.lineWidth=0.5;
+  for(let i=0;i<=4;i++){
+    const y=padT+chartH*(i/4);
+    ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+  }
+
+  /* volume bars */
+  const candleW=Math.max(1,(chartW/data.length)*0.55);
+  data.forEach((d,i)=>{
+    const x=padL+i*(chartW/data.length)+candleW*0.2;
+    const bull=d.c>=d.o;
+    ctx.fillStyle=bull?'rgba(74,222,128,0.08)':'rgba(248,113,113,0.08)';
+    const barH=chartH*0.15*Math.random()*0.5;
+    ctx.fillRect(x,H-padB-barH,candleW,barH);
+  });
+
+  /* candles */
+  data.forEach((d,i)=>{
+    const x=padL+i*(chartW/data.length)+chartW/(data.length*2);
+    const bull=d.c>=d.o;
+    const col=bull?'#4ade80':'#f87171';
+    ctx.strokeStyle=col;ctx.lineWidth=0.8;
+    ctx.beginPath();
+    ctx.moveTo(x,toY(d.h));ctx.lineTo(x,toY(d.l));
+    ctx.stroke();
+    const candleX=x-candleW/2;
+    const candleTop=Math.min(toY(d.o),toY(d.c));
+    const candleHeight=Math.abs(toY(d.o)-toY(d.c))||1;
+    ctx.fillStyle=bull?'rgba(74,222,128,0.7)':'rgba(248,113,113,0.7)';
+    ctx.fillRect(candleX,candleTop,candleW,candleHeight);
+  });
+
+  /* moving average line */
+  const ma=[];
+  for(let i=0;i<data.length;i++){
+    const s=Math.max(0,i-7);
+    const avg=data.slice(s,i+1).reduce((a,b)=>a+b.c,0)/(i-s+1);
+    ma.push(avg);
+  }
+  ctx.strokeStyle=color||'#C9A84C';ctx.lineWidth=1.5;
+  ctx.shadowBlur=6;ctx.shadowColor=color||'#C9A84C';
+  ctx.beginPath();
+  ma.forEach((p,i)=>{
+    const x=padL+i*(chartW/data.length)+chartW/(data.length*2);
+    i===0?ctx.moveTo(x,toY(p)):ctx.lineTo(x,toY(p));
+  });
+  ctx.stroke();
+  ctx.shadowBlur=0;
+}
+
+/* Hero animated chart */
+let heroData=generateCandleData(80,21000,180,2);
+function drawHeroChart(){
+  const canvas=document.getElementById('heroChart');
+  if(!canvas)return;
+  canvas.width=canvas.parentElement.clientWidth*2;
+  canvas.height=canvas.parentElement.clientHeight*2;
+  canvas.style.width='100%';canvas.style.height='100%';
+  drawCandleChart('heroChart',heroData,'rgba(201,168,76,0.6)');
+}
+window.addEventListener('load',drawHeroChart);
+window.addEventListener('resize',drawHeroChart);
+
+/* Animate hero chart — add new candle every 800ms */
+setInterval(()=>{
+  const last=heroData[heroData.length-1];
+  const change=(Math.random()-0.47)*200+1;
+  const open=last.c,close=open+change;
+  const high=Math.max(open,close)+Math.random()*50;
+  const low=Math.min(open,close)-Math.random()*50;
+  heroData.push({o:open,c:close,h:high,l:low});
+  if(heroData.length>100)heroData.shift();
+  drawHeroChart();
+},800);
+
+/* Market chart */
+const marketData={
+  NQ:generateCandleData(60,21000,180,2),
+  YM:generateCandleData(60,43000,250,1.5),
+  ES:generateCandleData(60,5800,45,1),
+  CL:generateCandleData(60,78,0.8,0.1),
+  GC:generateCandleData(60,2650,18,0.8)
+};
+
+let currentMarket='NQ';
+
+function drawMarketChart(symbol){
+  const canvas=document.getElementById('marketChart');
+  if(!canvas)return;
+  canvas.width=canvas.parentElement.clientWidth*2;
+  canvas.height=canvas.parentElement.clientHeight*2;
+  canvas.style.width='100%';canvas.style.height='100%';
+  drawCandleChart('marketChart',marketData[symbol],'#C9A84C');
+}
+
+function switchChart(sym,name,col){
+  currentMarket=sym;
+  document.getElementById('chartTicker').textContent=sym;
+  const last=marketData[sym][marketData[sym].length-1];
+  const first=marketData[sym][0];
+  const pct=((last.c-first.o)/first.o*100).toFixed(2);
+  const el=document.getElementById('chartChange');
+  el.textContent=(pct>0?'+':'')+pct+'%';
+  el.style.color=pct>0?'#4ade80':'#f87171';
+  drawMarketChart(sym);
+}
+
+window.addEventListener('load',()=>drawMarketChart('NQ'));
+window.addEventListener('resize',()=>drawMarketChart(currentMarket));
+
+/* Animate market chart */
+setInterval(()=>{
+  Object.keys(marketData).forEach(sym=>{
+    const d=marketData[sym];
+    const last=d[d.length-1];
+    const base=sym==='CL'?1.2:sym==='GC'?20:sym==='ES'?50:sym==='YM'?300:200;
+    const trend=sym==='NQ'?2:sym==='GC'?0.8:1;
+    const change=(Math.random()-0.47)*base+trend;
+    const o=last.c,c=o+change;
+    d.push({o,c,h:Math.max(o,c)+Math.random()*base*0.3,l:Math.min(o,c)-Math.random()*base*0.3});
+    if(d.length>80)d.shift();
+  });
+  drawMarketChart(currentMarket);
+  const last=marketData[currentMarket];
+  const pct=((last[last.length-1].c-last[0].o)/last[0].o*100).toFixed(2);
+  const el=document.getElementById('chartChange');
+  if(el){el.textContent=(pct>0?'+':'')+pct+'%';el.style.color=pct>0?'#4ade80':'#f87171';}
+},1200);
+
+/* ========== FAQ ========== */
+function toggleFaq(el){
+  const item=el.parentElement;
+  const isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!isOpen)item.classList.add('open');
+}
+
+/* ========== COUNTER ANIMATION ========== */
+function animateCounters(){
+  document.querySelectorAll('.stat-number').forEach(el=>{
+    if(el.dataset.animated)return;
+    el.dataset.animated='1';
+  });
+}
+const statsObs=new IntersectionObserver(e=>{
+  e.forEach(en=>{if(en.isIntersecting)animateCounters()});
+},{threshold:0.5});
+document.querySelectorAll('.stats-bar').forEach(el=>statsObs.observe(el));
+</script>
+</body>
+</html>
